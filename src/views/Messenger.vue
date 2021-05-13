@@ -171,12 +171,13 @@ export default {
         this.$ws.connect()
       })
     }).catch((e) => {
-      if (this.uiIsCordovaPlatform) {
+      /* if (this.uiIsCordovaPlatform) {
         this.$router.push({ name: 'auth' })
       } else {
         this.$auth.open()
         window.location = '/auth'
-      }
+      } */
+      this.$router.push({ path: '/auth' })
     })
   },
 

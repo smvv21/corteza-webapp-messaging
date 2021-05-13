@@ -12,6 +12,11 @@ import i18n from './i18n'
 import store from './store'
 import router from './router'
 
+// 修复 $auth.open 会忽略目录结构直接访问网站根目录的bug
+Vue.prototype.$auth.open = function () {
+  router.push('/auth')
+}
+
 export default (options = {}) => {
   options = {
     el: '#app',
