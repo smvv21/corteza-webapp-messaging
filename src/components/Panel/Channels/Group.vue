@@ -8,7 +8,10 @@
       >
         <i class="icon icon-left icon-plus btn" />
       </router-link>
-      <a @click="expanded=!expanded">
+      <a
+        v-if="canExpand"
+        @click="expanded=!expanded"
+      >
         <slot />
         <span v-if="list">
           <i
@@ -21,6 +24,7 @@
           />
         </span>
       </a>
+      <span v-else><slot /></span>
     </div>
     <ul v-if="list && expanded">
       <channel
@@ -69,6 +73,11 @@ export default {
     canCreate: {
       type: Boolean,
       required: false,
+      default: false,
+    },
+
+    canExpand: {
+      type: Boolean,
       default: false,
     },
   },

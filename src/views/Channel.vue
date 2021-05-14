@@ -404,6 +404,7 @@ export default {
   & > div.messages {
     flex: 1 100%;
     overflow-y: auto; //to avoid double scroll on linux
+    padding: 10px 0;
   }
 }
 </style>

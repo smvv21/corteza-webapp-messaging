@@ -5,8 +5,6 @@
     :key="message.messageID"
     class="message-n-meta"
     :class="{
-      'consecutive': consecutive,
-      'first': !consecutive,
       'attachment' : message.attachment,
       'valid' : message.attachment && message.attachment.size > 0,
       'with-replies' : message.replies,
@@ -18,6 +16,7 @@
       'unread': isUnread,
       'type-channel-event': message.type === 'channelEvent',
       'last' : isLast && !isFirst,
+      'my-msg-item' : message.userID === currentUser.userID,
     }"
     @click.alt.exact.prevent="$emit('markAsUnread', { message })"
     @click.meta.exact.prevent="onOpenThread"
@@ -29,97 +28,55 @@
     >
       {{ $t('message.newMessages') }}
     </div>
-    <section v-if="message.type !== 'channelEvent'">
-      <em
-        v-if="!consecutive"
-        class="avatar"
-      >
-        <router-link :to="{ name: 'profile', params: { userID: message.userID } }">
-          <avatar
-            :user-i-d="message.userID"
-            :user="message.user"
-          />
-        </router-link>
-      </em>
-      <em
-        v-if="!consecutive"
-        class="author selectable"
-      >
-        <router-link :to="{ name: 'profile', params: { userID: message.userID } }">
-          {{ getUserLabel }}
-        </router-link>
-      </em>
-      <i18next
-        path="message.postedDate"
-        tag="span"
-        class="date"
-      >
-        <span place="relative">{{ moment(message.createdAt).fromNow() }}</span>
 
-        <span place="time">
-          <template v-if="!isToday(message.createdAt)">{{ $t('message.relativeTime', { time: momentHourMinute(message.createdAt) }) }}</template>
-        </span>
-      </i18next>
-
-      <em class="time selectable">{{ momentHourMinute(message.createdAt) }}</em>
-      <em class="day selectable">{{ momentDayMonth(message.createdAt) }}</em>
-
-      <!-- @todo this should be moved away & managed with portal-vue -->
-      <actions
-        v-if="!hideActions && !isEditing"
-        class="actions"
-        v-bind="$props"
-        @reaction="onReaction"
-        v-on="$listeners"
-      />
-    </section>
-    <section v-else>
-      <em class="day selectable">{{ momentDayMonth(message.createdAt) }}</em>
-    </section>
-    <div
-      class="selectable"
-      :class="{ from_me: message.userID === currentUser.userID,
-                'message' : !isEditing,
-      }"
+    <em
+      v-if="message.userID !== currentUser.userID && message.type !== 'channelEvent'"
+      class="avatar"
     >
-      <attachment
-        v-if="message.attachment"
-        class="message-content"
-        :attachment="message.attachment"
-      />
+      <router-link :to="{ name: 'profile', params: { userID: message.userID } }">
+        <avatar
+          :user-i-d="message.userID"
+          :user="message.user"
+        />
+      </router-link>
+    </em>
 
-      <inline-edit
-        v-if="isEditing"
-        ref="channelInput"
-        :submit-on-enter="submitOnEnter"
-        :channel="channel"
-        :message="message"
-        v-bind="$props"
-        v-on="$listeners"
-        @cancel="$emit('cancelEditing')"
-      />
+    <div>
+      <div
+        :class="{ from_me: message.userID === currentUser.userID,
+                  'message' : !isEditing,
+        }"
+      >
+        <attachment
+          v-if="message.attachment"
+          class="message-content"
+          :attachment="message.attachment"
+        />
 
-      <contents
-        v-if="!isEditing"
-        :id="message.messageID"
-        class="message-content"
-        :content="message.message"
-        v-on="$listeners"
-      />
-
-      <embedded-box
-        v-if="embeded"
-        :src="embeded.src"
-      />
+        <contents
+          v-if="!isEditing"
+          :id="message.messageID"
+          class="message-content"
+          :content="message.message"
+          v-on="$listeners"
+        />
+      </div>
+      <div class="day-time">
+        {{ momentDayMonth(message.createdAt) }} {{ momentHourMinute(message.createdAt) }}
+      </div>
     </div>
 
-    <reactions
-      v-if="!hideReactions && message.type !== 'channelEvent'"
-      class="reactions"
-      :class="{'no-reactions': message.reactions.length === 0}"
-      :reactions="message.reactions"
-      @reaction="onReaction"
-    />
+    <em
+      v-if="message.userID === currentUser.userID && message.type !== 'channelEvent'"
+      class="avatar avatar-my"
+    >
+      <router-link :to="{ name: 'profile', params: { userID: message.userID } }">
+        <avatar
+          :user-i-d="message.userID"
+          :user="message.user"
+        />
+      </router-link>
+    </em>
 
     <footnote
       :message="message"
@@ -132,23 +89,23 @@
 import * as moment from 'moment'
 import Attachment from './Attachment'
 import Contents from './Contents'
-import Reactions from './Reactions'
-import EmbeddedBox from './EmbeddedBox'
-import Footnote from './Footnote'
-import Actions from './Actions'
+// import Reactions from './Reactions'
+// import EmbeddedBox from './EmbeddedBox'
+// import Footnote from './Footnote'
+// import Actions from './Actions'
 import Avatar from 'corteza-webapp-messaging/src/components/Avatar'
-import InlineEdit from './InlineEdit'
+// import InlineEdit from './InlineEdit'
 
 export default {
   components: {
     Attachment,
     Contents,
     Avatar,
-    Reactions,
-    InlineEdit,
-    EmbeddedBox,
-    Footnote,
-    Actions,
+    // Reactions,
+    // InlineEdit,
+    // EmbeddedBox,
+    // Footnote,
+    // Actions,
   },
 
   props: {
@@ -311,8 +268,8 @@ em{
 }
 
 .message-n-meta {
+  display:flex;
   margin-bottom: 10px;
-  padding: 1px 5px 1px 66px;
   position: relative;
 
   &.edited {
@@ -330,7 +287,7 @@ em{
       display: inline-block;
     }
     .actions {
-      display: block;
+      //display: block;
     }
     .reactions.no-reactions {
       display: block;
@@ -339,6 +296,7 @@ em{
   }
 
   &.type-channel-event{
+    display:none;
     padding: 1px 1px 1px 66px;
     margin-bottom: 0px;
     font-style: italic;
@@ -356,9 +314,6 @@ em{
     }
     &.last-read {
       font-style: normal;
-    }
-    .day {
-      top: 8px;
     }
   }
 
@@ -405,12 +360,6 @@ em{
       .date {
         display: none;
       }
-
-      .time {
-        display: block;
-        background-color: transparent;
-        z-index: 5;
-      }
     }
     &.type-channel-event{
       margin-top: 0;
@@ -420,23 +369,12 @@ em{
       margin-bottom: 10px;
       // because attachments are bigger than 65px;
     }
-    .time {
-      left: 22px;
-      top: 10px;
-    }
-    .day {
-      display: none;
-    }
     .message {
       &:before {
         display: none;
       }
     }
 
-  }
-
-  .message{
-    margin-right: 10px;
   }
 
   .reactions {
@@ -449,6 +387,15 @@ em{
       float: right;
     }
   }
+
+  &.my-msg-item{
+    justify-content: flex-end;
+    text-align:right;
+
+    .message{
+      border-radius: 8px 0  8px 8px;
+    }
+  }
 }
 
 .author{
@@ -459,17 +406,20 @@ em{
   }
 }
 
-.date,
-.time,
-.day {
+.day-time {
+  margin-top: 6px;
   color: $secondary;
 }
 
 .avatar {
-  position: absolute;
-  left: 20px;
   a {
     text-decoration: none;
+  }
+
+  margin-right:10px;
+
+  &.avatar-my{
+    margin-left:10px;
   }
 }
 
@@ -479,19 +429,7 @@ em{
   padding: 2px 0.5em 2px 0;
 }
 
-.time, .day {
-  position: absolute;
-  top: 35px;
-  font-size: 10px;
-  left: 23px;
-}
-
-.time {
-  display: none;
-  left: 20px;
-}
-
-.date, .actions {
+.actions {
   display: none;
 }
 
@@ -499,11 +437,14 @@ em{
   position: relative;
   background-color: $white;
   word-wrap: break-word;
-  padding: 6px;
+  padding: 10px;
   display: table;
   min-width: 180px;
 
+  border-radius: 0 8px 8px 8px;
+
   &:before {
+    display: none !important;
     content: " ";
     background-color: $white;
     position: absolute;

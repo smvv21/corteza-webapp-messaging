@@ -1,23 +1,20 @@
 <template>
   <nav>
-    <search-input
+    <!-- <search-input
       :focus="true"
       v-on="$listeners"
-    />
+    /> -->
 
     <div class="scrollable">
-      <div class="shortcuts">
+      <!-- <div class="shortcuts">
         <ul>
           <li @click="gotoAndClose({name: 'threads'})">
             <i class="icon icon-left icon-Fichier-2" />{{ $t('panel.threads') }}
           </li>
-          <!--<li @click="gotoAndClose({name: 'unreads'})">-->
-          <!--<i class="icon icon-left icon-bell2"></i>All unreads-->
-          <!--</li>-->
         </ul>
-      </div>
+      </div> -->
 
-      <group
+      <!-- <group
         v-if="unreadChannels.length > 0"
         :list="unreadChannels"
         :users="users"
@@ -26,9 +23,9 @@
         v-on="$listeners"
       >
         {{ $t('panel.unreadMessages') }}
-      </group>
+      </group> -->
 
-      <group
+      <!-- <group
         v-if="pinnedChannels.length > 0"
         :list="pinnedChannels"
         :users="users"
@@ -37,9 +34,9 @@
         v-on="$listeners"
       >
         {{ $t('panel.pinned') }}
-      </group>
+      </group> -->
 
-      <group
+      <!-- <group
         :link="{name: 'new-channel', params: { type: 'public' } }"
         :list="publicChannels"
         :can-create="canCreatePublicChannel"
@@ -48,13 +45,13 @@
         v-on="$listeners"
       >
         {{ $t('panel.channel.public') }}
-      </group>
+      </group> -->
 
-      <div class="browse">
+      <!-- <div class="browse">
         <a @click="$emit('openQuickSearch')">+ {{ $t('panel.channel.browse') }}</a>
-      </div>
+      </div> -->
 
-      <group
+      <!-- <group
         :link="{name: 'new-channel', params: { type: 'private' } }"
         :list="privateChannels"
         :can-create="canCreatePrivateChannel"
@@ -62,7 +59,7 @@
         v-on="$listeners"
       >
         {{ $t('panel.channel.private') }}
-      </group>
+      </group> -->
 
       <group
         :link="{name: 'new-channel', params: { type: 'group' } }"
@@ -75,18 +72,18 @@
         {{ $t('panel.channel.group') }}
       </group>
 
-      <!-- Temporary -->
-      <router-link
-        v-if="$store.getters['ui/isCordovaPlatform']"
+      <!-- Logout -->
+      <!-- <router-link
         :to="{ name: 'auth:logout' }"
       >
         Log out
-      </router-link>
-      <div
+      </router-link> -->
+
+      <!-- <div
         class="version"
       >
         {{ frontendVersion }}
-      </div>
+      </div> -->
     </div>
   </nav>
 </template>
@@ -94,13 +91,11 @@
 <script>
 import { mapGetters } from 'vuex'
 import Group from 'corteza-webapp-messaging/src/components/Panel/Channels/Group'
-import SearchInput from 'corteza-webapp-messaging/src/components/SearchInput'
 import users from 'corteza-webapp-messaging/src/mixins/users'
 
 export default {
   components: {
     Group,
-    SearchInput,
   },
 
   mixins: [
